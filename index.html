@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dashboard</title>
+    <meta charset="utf-8" />
+
+    <script src="https://cdn.jsdelivr.net/npm/vega@5.21.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.2.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.20.2"></script>
+
+    <style media="screen">
+      /* Add space between Vega-Embed links  */
+      .vega-actions a {
+        margin-right: 5px;
+      }
+      body{background-color:antiquewhite;}
+    </style>
+  </head>
+  <body>
+    <h1>Bangkok Subdistrict Area</h1>
+    <!-- Container for the visualization -->
+    <div id="vis"></div>
+
+    <script>
+      // Assign the specification to a local variable vlSpec.
+      var vlSpec = {
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "data": {
+    "url": "https://raw.githubusercontent.com/chateprw/choropleth-map-/main/tod2.json",
+    "format": {"type": "topojson", "feature": "tod2"}
+  },
+  "transform": [{
+      "lookup": "properties.HC_AREA",
+      "from": {
+        "data": {
+          "url": "https://raw.githubusercontent.com/chateprw/choropleth-map-/main/test2csv.csv"
+        },
+        "key": "HC_AREA",
+        "fields": ["AREA"]
+      }
+  }],
+  "hconcat":[
+  {
+    "width":300,
+    "height":550,
+    
+    "mark":"geoshape",
+    "encoding": {
+      "color":{
+        "field":"AREA",
+        "type":"quantitative"
+      },
+      "opacity":{
+      "condition":{
+        "param":"pts",
+        "value":1
+      },
+      "value":0.3
+      }
+    }
+  },
+  {
+    "width":800,
+    "height":550,
+    "mark":"bar",
+    "params": [{
+      "name":"pts",
+      "select":{"type":"point","encodings": ["x"],"on":"mouseover"}
+    }],
+    "encoding": {
+      "x":{"field":"properties.HC_AREA","type":"nominal"},
+      "y":{"field":"AREA","type":"quantitative"},
+      "color":{
+        "field":"AREA",
+        "type":"quantitative"
+      },
+      "opacity":{
+        "condition":{
+          "param":"pts",
+          "value":1
+          },
+          "value":0.5
+      }
+    }
+  }
+  ]
+};
+
+      // Embed the visualization in the container with id vis
+      vegaEmbed('#vis', vlSpec);
+    </script>
+  </body>
+</html>
